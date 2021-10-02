@@ -6,7 +6,7 @@ module.exports = (pool) => {
     db.addList = async (list) => {
         const res = await pool.query(
             'INSERT INTO TodoLists (name, enable) VALUES ($1,$2) RETURNING *',
-            [item.name, true]
+            [list.name, true]
         ) 
         return new TodoItems(res.rows[0])
     }
@@ -36,9 +36,12 @@ module.exports = (pool) => {
                     ) AND
                     enable = $2`,[uid, true]
         )
-        const toReturn = res.map(row => {
-            return new TodoLists(row.id, row.name)
-        })
+        if (res.length > 0){
+            const toReturn = res.map(row => {
+                return new TodoLists(row.id, row.name)
+            })
+        } else return {}
+        
 
         return toReturn
     }

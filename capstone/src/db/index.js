@@ -6,6 +6,8 @@ let pool = new Pool({
 
 const db = {
     ...require('./users.js')(pool),
+    ...require('./todoitems')(pool),
+    ...require('./todolists')(pool),
 }
 
 

@@ -5,7 +5,6 @@ module.exports = (service) => {
       if (token) {
         const uid = service.verifyToken(token)
         if (uid !== null) {
-          console.log(uid)
           req.uid = uid
           return next()
         }

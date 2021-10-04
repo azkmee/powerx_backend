@@ -1,8 +1,8 @@
 class TodoItems { 
-    constructor ({ id, name, todolistId }){
+    constructor ({ id, name, todoListId }){
         this.id = id
         this.name = name
-        this.todolistId = todolistId
+        this.todoListId = todoListId
     }
 }
 

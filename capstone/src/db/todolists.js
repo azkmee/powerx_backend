@@ -8,7 +8,7 @@ module.exports = (pool) => {
             'INSERT INTO TodoLists (name, enable) VALUES ($1,$2) RETURNING *',
             [list.name, true]
         ) 
-        return new TodoItems(res.rows[0])
+        return new TodoLists(res.rows[0])
     }
 
     db.removeList = async (id) => {
@@ -16,7 +16,7 @@ module.exports = (pool) => {
             'UPDATE TodoItems SET enable=$2 WHERE id=$1 RETURNING *',
             [id, false]
         )
-        return new TodoItems(res.rows[0])
+        return new TodoLists(res.rows[0])
     }
 
     db.updateList = async (id, list) => {
@@ -24,7 +24,7 @@ module.exports = (pool) => {
             'UPDATE TodoItems SET name=$2 WHERE id=$1 RETURNING *',
             [id, item.name]
         )
-        return new TodoItems(res.rows[0])
+        return new TodoLists(res.rows[0])
     }
 
     db.getAllLists = async (uid) => {

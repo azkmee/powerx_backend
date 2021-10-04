@@ -1,4 +1,4 @@
-module.exports = (service) => {
+module.exports =  (service) => {
     return (req, res, next) => {
       const authHeader = req.headers.authorization
       const token = authHeader && authHeader.split(' ')[1]
@@ -11,4 +11,4 @@ module.exports = (service) => {
       }
       res.status(401).send('Unauthorized')
     }
-  }
+}

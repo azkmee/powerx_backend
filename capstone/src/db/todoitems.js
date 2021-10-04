@@ -5,8 +5,8 @@ module.exports = (pool) => {
 
     db.addItem = async (item) => {
         const res = await pool.query(
-            'INSERT INTO TodoItems (name, enable, todolistid) VALUES ($1,$2) RETURNING *',
-            [item.name, true, item.todolistid]
+            'INSERT INTO TodoItems (name, enable, todolistid) VALUES ($1,$2,$3) RETURNING *',
+            [item.name, true, item.todoListId]
         )
         return new TodoItems(res.rows[0])
     }

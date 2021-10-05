@@ -1,31 +1,13 @@
-const TodoLists = require('../models/todolists')
-
-const checkListExistAndAccess = async (pool, listid, uid) => {
-    const checkListExist = await pool.query(
-        `SELECT listid FROM UserAccess 
-            WHERE listid = $1`, [listid])
-    if (checkListExist.rows.length == 0) {
-        return 404
-    }
-
-    const checkAccess = await pool.query(
-        `SELECT listid FROM UserAccess 
-            WHERE listid = $1 AND uid = $2` , 
-            [listid, uid])
-    if (checkAccess.rows.length == 0) {
-        return 403
-    }
-
-    return 200
-}
+const { TodoLists } = require('../models')
+const checkListExistAndAccess = require('./utils')
 
 module.exports = (pool) => {
     const db = {}
 
     db.addList = async (list) => {
         const res = await pool.query(
-            'INSERT INTO TodoLists (name, enable) VALUES ($1,$2) RETURNING *',
-            [list.name, true]
+            'INSERT INTO TodoLists (name) VALUES ($1) RETURNING *',
+            [list.name]
         ) 
         return new TodoLists(res.rows[0])
     }
@@ -33,12 +15,10 @@ module.exports = (pool) => {
     db.removeList = async (id, uid) => {
 
         const checkAccess = await checkListExistAndAccess(pool, id, uid)
-        console.log(checkAccess, 'checkaccess')
         if (checkAccess !== 200) {
             return checkAccess
         }
 
-        console.log(id, 'listid')
         const res = await pool.query(
             `DELETE From UserAccess 
                 WHERE listid = $1`,

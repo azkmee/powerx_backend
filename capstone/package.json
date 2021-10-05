@@ -1,19 +1,21 @@
 {
   "dependencies": {
+    "amqplib": "^0.8.0",
     "bcrypt": "^5.0.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.13",
-    "pg": "^8.7.1"
+    "pg": "^8.7.1",
+    "supertest": "^6.1.6"
   },
   "devDependencies": {
     "@jest-mock/express": "^1.4.5",
     "jest": "^27.2.4"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage --runInBand",
     "start": "node src/server.js",
     "dev": "nodemon src/server.js"
   }

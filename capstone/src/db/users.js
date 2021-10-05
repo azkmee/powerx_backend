@@ -1,4 +1,5 @@
 const User = require('../models/user')
+const checkListExistAndAccess = require('./utils')
 
 module.exports = (pool) => {
     const db = {}
@@ -19,12 +20,44 @@ module.exports = (pool) => {
         return res.rowCount ? new User(res.rows[0]) : null
     }
 
-    db.addUserAccess = async (uid, listid) => {
-      const res = await pool.query(
-        'INSERT INTO UserAccess (uid, listid) VALUES ($1,$2) RETURNING *',
-        [uid, listid]
-      )
-      return res
+    db.addUserAccess = async (uid, listid, email=null) => {
+      if (email){
+        const checkAccess = await checkListExistAndAccess(pool, listid, uid)
+        if (checkAccess !== 200) {
+          return checkAccess
+        }
+
+        const emailExist = await pool.query(
+          `SELECT id FROM users 
+            WHERE email = $1`,
+            [email]
+        )
+        if (emailExist.rows.length == 0){
+          return 'email doesnot exist'
+        }
+
+        const givenAccess = await pool.query(
+          `SELECT * FROM UserAccess
+            WHERE uid=$1 AND listid=$2`,
+            [emailExist.rows[0].id, listid]
+        )
+        if (givenAccess.rows.length !== 0){
+          return 'Email User already have access'
+        }
+        
+        const res = await pool.query(
+          'INSERT INTO UserAccess (uid, listid) VALUES ($1,$2) RETURNING *',
+          [emailExist.rows[0].id, listid]
+        )
+        return 'Access granted'
+
+      } else {
+        await pool.query(
+          'INSERT INTO UserAccess (uid, listid) VALUES ($1,$2) RETURNING *',
+          [uid, listid]
+        )
+      }
+
     }
 
     return db;

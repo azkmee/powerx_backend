@@ -13,6 +13,9 @@ module.exports = (db, authService, AuthMiddleware ) => {
 
     router.use('/lists', require('./todolists')(db))
     router.use('/items', require('./todoitems')(db))
+    router.use('/accounts', require('./accesslists')())
+
+    
 
 
     return router;

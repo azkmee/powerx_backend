@@ -25,7 +25,7 @@ db.initialise = async () => {
     await pool.query(`
         CREATE TABLE IF NOT EXISTS TodoLists (
             id SERIAL PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
+            name VARCHAR(100) NOT NULL
         )
     `)
 
@@ -34,7 +34,7 @@ db.initialise = async () => {
             id SERIAL PRIMARY KEY,
             name VARCHAR(100) NOT NULL,
             todolistid INTEGER NOT NULL,
-            FOREIGN KEY (todolistid) REFERENCES TodoLists(id),
+            FOREIGN KEY (todolistid) REFERENCES TodoLists(id) on DELETE CASCADE,
             enable BOOLEAN NOT NULL
         )
     `)
@@ -42,11 +42,29 @@ db.initialise = async () => {
     await pool.query(`
         CREATE TABLE IF NOT EXISTS UserAccess (
             uid INTEGER NOT NULL,
-            FOREIGN KEY (uid) REFERENCES Users(id),
+            FOREIGN KEY (uid) REFERENCES Users(id) on DELETE CASCADE,
             listid INTEGER NOT NULL,
-            FOREIGN KEY (listid) REFERENCES TodoLists(id)
+            FOREIGN KEY (listid) REFERENCES TodoLists(id) on DELETE CASCADE
         )
     `)
+}
+
+db.clearUserTable = async () => {
+    await pool.query(`DELETE FROM Users`)
+    await pool.query(`ALTER SEQUENCE Users_id_seq RESTART`)
+}
+
+db.clearUserAccessTable = async () => {
+    await pool.query(`DELETE FROM Useraccess`)
+}
+
+db.clearItemsTable = async () => {
+    await pool.query(`DELETE FROM todoitems`)
+    await pool.query(`ALTER SEQUENCE todoitems_id_seq RESTART`)
+}
+db.clearListsTable = async () => {
+    await pool.query(`DELETE FROM todolists`)
+    await pool.query(`ALTER SEQUENCE todolists_id_seq RESTART`)
 }
 
 db.end = async () => {

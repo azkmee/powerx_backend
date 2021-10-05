@@ -1,6 +1,6 @@
 const express = require('express')
-const TodoLists = require('../models/todolists')
-const TodoItems = require('../models/todoitems')
+const { TodoItems, TodoLists } = require('../models')
+const KEYWORDS = require('../keywords')
 
 module.exports = (db) => {
     const router = express.Router();
@@ -17,9 +17,9 @@ module.exports = (db) => {
         const listid = req.body.id
         const dbRes = await db.getListById(listid, uid)
         if (dbRes == 404){
-            res.status(404).send('List id not found')
+            res.status(404).send(KEYWORDS.LIST_ID_NOT_FOUND)
         } else if (dbRes == 403){
-            res.status(403).send('User does not have access to this list')
+            res.status(403).send(KEYWORDS.UNAUTHORISED_USER)
         } else {
             res.send(dbRes)
         }
@@ -31,16 +31,19 @@ module.exports = (db) => {
             const uid = await req.uid
             const items = req.body.items
             if (name == null){
-                throw ('List name not found')
+                res.status(400).send(KEYWORDS.INPUT_NAME_NOT_FOUND)
             }
             const addedList = await db.addList(new TodoLists({name, uid}))
-            db.addUserAccess(uid, addedList.id)
-            const addedItems = items.map(async item => {
-                const addedItem =  await db.addItem(new TodoItems({name:item, todoListId: addedList.id }))
-                return addedItem.name
+            await db.addUserAccess(uid, addedList.id)
+            const addedItems = Promise.all(items.map( item => {
+                return db.addItem(new TodoItems({name:item, todoListId: addedList.id }), uid)
+                    .then(res => {
+                        return res.name
+                    })
+            }))
+            addedItems.then(items => {
+                res.status(201).send({...addedList, items})
             })
-            console.log(addedItems)
-            res.status(201).send({...addedList, items:addedItems})
 
         } catch (err) {
             res.status(400).send(err)
@@ -53,9 +56,9 @@ module.exports = (db) => {
 
         const dbRes = await db.removeList(listid, uid)
         if (dbRes == 404){
-            res.status(404).send('List id not found')
+            res.status(404).send(KEYWORDS.LIST_ID_NOT_FOUND)
         } else if (dbRes == 403){
-            res.status(403).send('User does not have access to this list')
+            res.status(403).send(KEYWORDS.UNAUTHORISED_USER)
         } else {
             res.send(`List of id ${listid} successfully deleted`)
         }
@@ -69,9 +72,9 @@ module.exports = (db) => {
         console.log(dbRes, 'dbRes')
 
         if (dbRes == 404){
-            res.status(404).send('List id not found')
+            res.status(404).send(KEYWORDS.LIST_ID_NOT_FOUND)
         } else if (dbRes == 403){
-            res.status(403).send('User does not have access to this list')
+            res.status(403).send(KEYWORDS.UNAUTHORISED_USER)
         } else {
             res.send(dbRes)
         }

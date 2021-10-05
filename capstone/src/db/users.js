@@ -19,5 +19,13 @@ module.exports = (pool) => {
         return res.rowCount ? new User(res.rows[0]) : null
     }
 
+    db.addUserAccess = async (uid, listid) => {
+      const res = await pool.query(
+        'INSERT INTO UserAccess (uid, listid) VALUES ($1,$2) RETURNING *',
+        [uid, listid]
+      )
+      return res
+    }
+
     return db;
 }

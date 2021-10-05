@@ -6,19 +6,26 @@ module.exports = (db) => {
     const router = express.Router();
 
     router.get('/all', async (req, res, next) => {
-        console.log(req.uid, 'reouter')
         const uid = await req.uid
-        const allLists = db.getAllLists(uid)
+        const allLists = await db.getAllLists(uid)
         console.log(allLists)
         res.send(allLists)
     })
 
     router.get('/by-id', async (req, res, next) => {
-
+        const uid = await req.uid
+        const listid = req.body.id
+        const dbRes = await db.getListById(listid, uid)
+        if (dbRes == 404){
+            res.status(404).send('List id not found')
+        } else if (dbRes == 403){
+            res.status(403).send('User does not have access to this list')
+        } else {
+            res.send(dbRes)
+        }
     })
 
     router.post('/', async (req, res, next) => {
-        console.log(req.body)
         try{
             const name = req.body.name
             const uid = await req.uid
@@ -27,6 +34,7 @@ module.exports = (db) => {
                 throw ('List name not found')
             }
             const addedList = await db.addList(new TodoLists({name, uid}))
+            db.addUserAccess(uid, addedList.id)
             const addedItems = items.map(async item => {
                 const addedItem =  await db.addItem(new TodoItems({name:item, todoListId: addedList.id }))
                 return addedItem.name
@@ -40,9 +48,34 @@ module.exports = (db) => {
     })
 
     router.patch('/remove', async (req, res, next) => {
+        const uid = await req.uid
+        const listid = req.body.id
+
+        const dbRes = await db.removeList(listid, uid)
+        if (dbRes == 404){
+            res.status(404).send('List id not found')
+        } else if (dbRes == 403){
+            res.status(403).send('User does not have access to this list')
+        } else {
+            res.send(`List of id ${listid} successfully deleted`)
+        }
     })
 
     router.patch('/update', async (req, res, next) => {
+        const uid = await req.uid
+        const listid = req.body.id
+        const name = req.body.newName
+        const dbRes = await db.updateList(listid, uid, new TodoLists({name, uid}))
+        console.log(dbRes, 'dbRes')
+
+        if (dbRes == 404){
+            res.status(404).send('List id not found')
+        } else if (dbRes == 403){
+            res.status(403).send('User does not have access to this list')
+        } else {
+            res.send(dbRes)
+        }
+
 
     })
 

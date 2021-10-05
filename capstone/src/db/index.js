@@ -1,3 +1,4 @@
+require('dotenv').config({path:'../../.env'})
 const { Pool } = require('pg')
 
 let pool = new Pool({
@@ -25,7 +26,6 @@ db.initialise = async () => {
         CREATE TABLE IF NOT EXISTS TodoLists (
             id SERIAL PRIMARY KEY,
             name VARCHAR(100) NOT NULL,
-            enable BOOLEAN NOT NULL
         )
     `)
 

@@ -31,7 +31,7 @@ module.exports = (db) => {
             const uid = await req.uid
             const items = req.body.items
             if (name == null){
-                res.status(400).send(KEYWORDS.INPUT_NAME_NOT_FOUND)
+                throw Error(KEYWORDS.INPUT_NAME_NOT_FOUND)
             }
             const addedList = await db.addList(new TodoLists({name, uid}))
             await db.addUserAccess(uid, addedList.id)

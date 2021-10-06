@@ -6,7 +6,6 @@ module.exports = (pool) => {
 
     db.addItem = async (item, uid) => {
         const listId = item.todoListId
-        console.log(item, uid)
         const checkAccess = await checkListExistAndAccess(pool, listId, uid)
         if (checkAccess !== 200) {
             return checkAccess
@@ -25,7 +24,6 @@ module.exports = (pool) => {
                 WHERE id=$1 AND enable=$2`,
                 [id, true]
         )
-        console.log(listId.rows)
         if (listId.rows.length == 0){
             return 404
         }
@@ -47,7 +45,6 @@ module.exports = (pool) => {
                 WHERE id=$1 AND enable=$2`,
                 [id, true]
         )
-        console.log(listId.rows)
         if (listId.rows.length == 0){
             return 404
         }

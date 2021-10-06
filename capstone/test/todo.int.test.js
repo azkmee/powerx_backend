@@ -17,6 +17,49 @@ afterAll(async () => {
     await utils.teardown()
 })
 
+describe('POST /lists', () => {
+    describe('given no name in body', () => {
+        beforeAll(async() => {
+            await db.clearListsTable()
+        })
+
+        it('should return 400', async () => {
+            return request(app)
+                .post('/lists')
+                .set('Authorization', token1)
+                .send({})
+                .expect(400)
+        })
+    })
+    
+    describe('given body with Name and items array', () => {
+        beforeAll(async() => {
+            await db.clearListsTable()
+        })
+        const newListsItems = {
+            name:'Test List1',
+            items:['test item 11','test item 12']
+        }
+
+        it('should return 200 and return new list and items ', async () => {
+            return request(app)
+                .post('/lists')
+                .set('Authorization', token1)
+                .send(newListsItems)
+                .expect(201)
+                .then(res => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            ...newListsItems,
+                            id:1
+                        })
+                    )
+                })
+        })
+
+    })
+})
+
 describe('GET /lists/all', () => {
     describe('given no lists', () => {
         beforeAll(async() => {

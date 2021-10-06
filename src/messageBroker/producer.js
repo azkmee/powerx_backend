@@ -1,10 +1,11 @@
 const amqplib = require('amqplib')
 const KEYWORDS = require('../keywords');
+require('dotenv').config()
 
 const queue = KEYWORDS.GRANT_ACCESS;
 
 const newMessage = async (message) => {
-  const client = await amqplib.connect('amqp://localhost:5672')
+  const client = await amqplib.connect(process.env.CLOUDAMQP_URL || 'amqp://localhost:5672')
   const channel = await client.createChannel()
   await channel.assertQueue(queue)
   console.log(message)

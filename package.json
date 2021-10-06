@@ -18,6 +18,7 @@
     "test": "jest --coverage --runInBand",
     "start": "node src/server.js",
     "db:migrate": "node scripts/migrate.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "worker" : "node src/messageBroker/consumer.js"
   }
 }

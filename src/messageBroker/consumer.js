@@ -7,7 +7,7 @@ const KEYWORDS = require('../keywords');
 const queue = KEYWORDS.GRANT_ACCESS;
 
 (async () => {
-  const client = await amqplib.connect('amqp://localhost:5672')
+  const client = await amqplib.connect(process.env.CLOUDAMQP_URL || 'amqp://localhost:5672')
   const channel = await client.createChannel()
   await channel.assertQueue(queue)
 

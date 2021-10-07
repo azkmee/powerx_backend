@@ -12,4 +12,5 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
+      - run: npm install jest
       - run: npm run test
